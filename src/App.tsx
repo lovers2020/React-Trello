@@ -1,31 +1,19 @@
 import { ThemeProvider, createGlobalStyle, styled } from "styled-components";
-import { Outlet } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "react-beautiful-dnd";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import reset from "styled-reset";
-import { toDoState } from "./atoms";
-import DraggableCard from "./components/DraggableCard";
+import { IToDoState, toDoState } from "./atoms";
+import Board from "./components/Board";
 
 const Boards = styled.div`
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(1, 1fr);
-`;
-const Board = styled.div`
-  padding: 20px 10px;
-  padding-top: 20px;
-  background-color: ${(props) => props.theme.boardColor};
-  border-radius: 5px;
-  min-height: 200px;
+  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
 `;
 const Wrapper = styled.div`
   display: flex;
-  max-width: 480px;
+  max-width: 980px;
   width: 100%;
   margin: 0 auto;
   justify-content: center;
@@ -36,17 +24,13 @@ const Wrapper = styled.div`
 const GlobalStyle = createGlobalStyle`
 ${reset}
 body { 
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Courier New', Courier, monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
   font-family: 'Noto Sans';
   background-color: ${(props) => props.theme.bgColor};
-  color: black;
-  
-  
+  color: black;  
 }
   * {
     box-sizing:border-box;
@@ -59,19 +43,20 @@ body {
 
 function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
-  const onDragEnd = ({ draggableId, destination, source }: DropResult) => {
+  const onDragEnd = ({ destination, draggableId, source }: DropResult) => {
     if (!destination) return;
-    setToDos((oldToDos) => {
-      const toDosCopy = [...oldToDos];
-      console.log("delete item on", source.index);
-      console.log(toDosCopy);
-      toDosCopy.splice(source.index, 1);
-      console.log("Deleted item");
-      console.log(toDosCopy);
-      console.log("put back", draggableId, "on", destination.index);
-      toDosCopy.splice(destination?.index, 0, draggableId);
-
-      return toDosCopy;
+    setToDos((allBoards) => {
+      const boardCopy: IToDoState = {};
+      Object.keys(allBoards).forEach((toDosKey) => {
+        boardCopy[toDosKey] = [...allBoards[toDosKey]];
+      });
+      boardCopy[source.droppableId].splice(source.index, 1);
+      boardCopy[destination.droppableId].splice(
+        destination?.index,
+        0,
+        draggableId
+      );
+      return boardCopy;
     });
   };
   return (
@@ -80,16 +65,9 @@ function App() {
       <DragDropContext onDragEnd={onDragEnd}>
         <Wrapper>
           <Boards>
-            <Droppable droppableId="one">
-              {(magic) => (
-                <Board ref={magic.innerRef} {...magic.droppableProps}>
-                  {toDos.map((toDo, index) => (
-                    <DraggableCard key={toDo} index={index} toDo={toDo} />
-                  ))}
-                  {magic.placeholder}
-                </Board>
-              )}
-            </Droppable>
+            {Object.keys(toDos).map((boardId) => (
+              <Board boardId={boardId} key={boardId} toDos={toDos[boardId]} />
+            ))}
           </Boards>
         </Wrapper>
       </DragDropContext>
