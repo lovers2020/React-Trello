@@ -46,17 +46,21 @@ function App() {
   const onDragEnd = ({ destination, draggableId, source }: DropResult) => {
     if (!destination) return;
     setToDos((allBoards) => {
-      const boardCopy: IToDoState = {};
-      Object.keys(allBoards).forEach((toDosKey) => {
-        boardCopy[toDosKey] = [...allBoards[toDosKey]];
-      });
-      boardCopy[source.droppableId].splice(source.index, 1);
-      boardCopy[destination.droppableId].splice(
-        destination?.index,
-        0,
-        draggableId
-      );
-      return boardCopy;
+      const sourceBoard = [...allBoards[source.droppableId]];
+      const destBoard = [...allBoards[destination.droppableId]];
+      const item = sourceBoard.splice(source.index, 1)[0];
+
+      if (source.droppableId === destination.droppableId) {
+        destBoard.splice(source.index, 1);
+      }
+      destBoard.splice(destination.index, 0, item);
+
+      console.log(sourceBoard, destBoard);
+      return {
+        ...allBoards,
+        [source.droppableId]: sourceBoard,
+        [destination.droppableId]: destBoard,
+      };
     });
   };
   return (
