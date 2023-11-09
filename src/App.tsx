@@ -5,6 +5,7 @@ import reset from "styled-reset";
 import { IToDoState, toDoState } from "./atoms";
 import Board from "./components/Board";
 import deleteCard from "./components/deleteCard";
+import DeleteCard from "./components/deleteCard";
 
 const Wrapper = styled.div`
   position: relative;
@@ -74,14 +75,15 @@ function App() {
   return (
     <>
       <GlobalStyle />
-      <Wrapper>
-        <DragDropContext onDragEnd={onDragEnd}>
+
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Wrapper>
           {Object.keys(toDos).map((boardId) => (
             <Board boardId={boardId} key={boardId} toDos={toDos[boardId]} />
           ))}
-        </DragDropContext>
-        <deleteCard />
-      </Wrapper>
+          <DeleteCard />
+        </Wrapper>
+      </DragDropContext>
     </>
   );
 }

@@ -4,13 +4,13 @@ import styled from "styled-components";
 const DeleteArea = styled.div<{ isDraggingOver: boolean }>`
   position: absolute;
   bottom: 40px;
-  right: 600px;
+  right: 60px;
   text-align: center;
   transition: scale 0.3s ease-in-out;
   scale: ${(props) => (props.isDraggingOver ? 1.1 : 1.0)};
 `;
 
-export default function deleteCard() {
+export default function DeleteCard() {
   return (
     <Droppable droppableId="delete">
       {(provided, snapshot) => (
