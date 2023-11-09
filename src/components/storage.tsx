@@ -1,4 +1,4 @@
-import { IToDoState, toDoState } from "../atoms";
+import { IToDoState } from "../atoms";
 
 export const loadToDos = () => {
   const getToDos = localStorage.getItem("ToDos");

@@ -1,21 +1,22 @@
-import { Droppable } from "react-beautiful-dnd";
+import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import DraggableCard from "./DraggableCard";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { ITodo, toDoState } from "../atoms";
-import { useSetRecoilState, useRecoilState } from "recoil";
+import { useSetRecoilState, useRecoilState, Snapshot } from "recoil";
 import { saveToDos } from "./storage";
 
 const Wrapper = styled.div`
   margin: 0 20px;
-  padding: 10px 10px;
+  padding: 10px;
   background-color: ${(props) => props.theme.boardColor};
   border-radius: 5px;
   min-height: 200px;
   min-width: 300px;
   display: flex;
   flex-direction: column;
+  align-items: center;
 `;
 const Title = styled.h1`
   text-align: center;
@@ -23,11 +24,8 @@ const Title = styled.h1`
   font-weight: 700;
   margin-bottom: 10px;
 `;
-interface IAreaProps {
-  isDraggingOver: boolean;
-  isDraggingFromThis: boolean;
-}
 const Area = styled.div<IAreaProps>`
+  width: 100%;
   background-color: ${(props) =>
     props.isDraggingOver
       ? "rgba(0,0,0,0.5);"
@@ -37,7 +35,6 @@ const Area = styled.div<IAreaProps>`
   flex-grow: 1;
   transition: background-color 0.3s ease-in-out;
   margin-top: 20px;
-  padding-bottom: 20px;
   border-radius: 5px;
 `;
 const Form = styled.form`
@@ -49,6 +46,12 @@ const Form = styled.form`
     padding: 5px 10px;
   }
 `;
+
+interface IAreaProps {
+  isDraggingOver: boolean;
+  isDraggingFromThis: boolean;
+}
+
 interface IBoardprops {
   toDos: ITodo[];
   boardId: string;
@@ -58,6 +61,9 @@ interface IForm {
 }
 
 export default function Board({ toDos, boardId }: IBoardprops) {
+  const onDrag = ({ source, draggableId, destination }: DropResult) => {
+    console.log(source, draggableId, destination);
+  };
   const [ToDos, setToDos] = useRecoilState(toDoState);
   const { register, setValue, handleSubmit } = useForm<IForm>();
   const onVaild = ({ toDo }: IForm) => {
@@ -88,25 +94,26 @@ export default function Board({ toDos, boardId }: IBoardprops) {
       </Form>
       <Droppable droppableId={boardId}>
         {(magic, snapshot) => (
-          <Area
-            isDraggingOver={snapshot.isDraggingOver}
-            isDraggingFromThis={Boolean(snapshot.draggingFromThisWith)}
-            ref={magic.innerRef}
-            {...magic.droppableProps}
-          >
-            {toDos.map((toDo, index) => (
-              <DraggableCard
-                key={toDo.id}
-                index={index}
-                toDoId={toDo.id}
-                toDoText={toDo.text}
-              />
-            ))}
+          <>
+            <Area
+              isDraggingOver={snapshot.isDraggingOver}
+              isDraggingFromThis={Boolean(snapshot.draggingFromThisWith)}
+              ref={magic.innerRef}
+              {...magic.droppableProps}
+            >
+              {toDos.map((toDo, index) => (
+                <DraggableCard
+                  key={toDo.id}
+                  index={index}
+                  toDoId={toDo.id}
+                  toDoText={toDo.text}
+                />
+              ))}
+            </Area>
             {magic.placeholder}
-          </Area>
+          </>
         )}
       </Droppable>
-      <span>asdasdsad</span>
     </Wrapper>
   );
 }
