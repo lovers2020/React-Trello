@@ -1,16 +1,19 @@
 import { Droppable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import DraggableCard from "./DraggableCard";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { ITodo, toDoState } from "../atoms";
-import { useSetRecoilState } from "recoil";
+import { useSetRecoilState, useRecoilState } from "recoil";
+import { saveToDos } from "./storage";
 
 const Wrapper = styled.div`
-  padding: 10px 0px;
+  margin: 0 20px;
+  padding: 10px 10px;
   background-color: ${(props) => props.theme.boardColor};
   border-radius: 5px;
-  min-height: 300px;
+  min-height: 200px;
+  min-width: 300px;
   display: flex;
   flex-direction: column;
 `;
@@ -27,18 +30,23 @@ interface IAreaProps {
 const Area = styled.div<IAreaProps>`
   background-color: ${(props) =>
     props.isDraggingOver
-      ? "#dfe6e9"
+      ? "rgba(0,0,0,0.5);"
       : props.isDraggingFromThis
       ? "#b2bec3"
       : "trasnparent"};
   flex-grow: 1;
   transition: background-color 0.3s ease-in-out;
-  padding: 20px;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  border-radius: 5px;
 `;
 const Form = styled.form`
   width: 100%;
   input {
     width: 100%;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
   }
 `;
 interface IBoardprops {
@@ -48,8 +56,9 @@ interface IBoardprops {
 interface IForm {
   toDo: string;
 }
+
 export default function Board({ toDos, boardId }: IBoardprops) {
-  const setToDos = useSetRecoilState(toDoState);
+  const [ToDos, setToDos] = useRecoilState(toDoState);
   const { register, setValue, handleSubmit } = useForm<IForm>();
   const onVaild = ({ toDo }: IForm) => {
     const newToDo = {
@@ -57,7 +66,6 @@ export default function Board({ toDos, boardId }: IBoardprops) {
       text: toDo,
     };
     setToDos((allBoards) => {
-      console.log(allBoards, boardId);
       return {
         ...allBoards,
         [boardId]: [...allBoards[boardId], newToDo],
@@ -65,6 +73,9 @@ export default function Board({ toDos, boardId }: IBoardprops) {
     });
     setValue("toDo", "");
   };
+  useEffect(() => {
+    saveToDos(ToDos);
+  }, [ToDos]);
   return (
     <Wrapper>
       <Title>{boardId}</Title>
@@ -95,6 +106,7 @@ export default function Board({ toDos, boardId }: IBoardprops) {
           </Area>
         )}
       </Droppable>
+      <span>asdasdsad</span>
     </Wrapper>
   );
 }

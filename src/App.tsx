@@ -12,6 +12,7 @@ const Boards = styled.div`
   grid-template-columns: repeat(3, 1fr);
 `;
 const Wrapper = styled.div`
+  background-color: white;
   display: flex;
   max-width: 980px;
   width: 100%;
@@ -54,8 +55,6 @@ function App() {
         destBoard.splice(source.index, 1);
       }
       destBoard.splice(destination.index, 0, item);
-
-      console.log(sourceBoard, destBoard);
       return {
         ...allBoards,
         [source.droppableId]: sourceBoard,
@@ -68,11 +67,9 @@ function App() {
       <GlobalStyle />
       <DragDropContext onDragEnd={onDragEnd}>
         <Wrapper>
-          <Boards>
-            {Object.keys(toDos).map((boardId) => (
-              <Board boardId={boardId} key={boardId} toDos={toDos[boardId]} />
-            ))}
-          </Boards>
+          {Object.keys(toDos).map((boardId) => (
+            <Board boardId={boardId} key={boardId} toDos={toDos[boardId]} />
+          ))}
         </Wrapper>
       </DragDropContext>
     </>

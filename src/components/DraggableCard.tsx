@@ -3,6 +3,7 @@ import { styled } from "styled-components";
 import React from "react";
 
 const Card = styled.div<{ isDragging: boolean }>`
+  font-size: 14px;
   border-radius: 5px;
   margin-bottom: 5px;
   padding: 10px;

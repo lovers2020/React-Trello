@@ -1,4 +1,5 @@
 import { atom, selector } from "recoil";
+import { loadToDos } from "./components/storage";
 
 export interface ITodo {
   id: number;
@@ -7,12 +8,12 @@ export interface ITodo {
 export interface IToDoState {
   [key: string]: ITodo[];
 }
-
+const defaultToDos: IToDoState = {
+  "To Do": [],
+  Doing: [],
+  Done: [],
+};
 export const toDoState = atom<IToDoState>({
   key: "toDo",
-  default: {
-    "To Do": [],
-    Doing: [],
-    Done: [],
-  },
+  default: loadToDos() ?? defaultToDos,
 });
