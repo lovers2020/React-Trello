@@ -1,5 +1,5 @@
-import { useSetRecoilState } from "recoil";
-import { toDoState } from "../atoms";
+import { useSetRecoilState, useRecoilState } from "recoil";
+import { BoardsState, toDoState } from "../atoms";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 
@@ -23,15 +23,17 @@ const Form = styled.form`
 `;
 
 export default function CreateBoard() {
-  const setBoards = useSetRecoilState(toDoState);
+  const setItems = useSetRecoilState(toDoState);
+  const [boards, setBoards] = useRecoilState(BoardsState);
   const { register, handleSubmit, setValue } = useForm<IBoard>();
   const onValid = ({ boardInput }: IBoard) => {
-    setBoards((allBoadrd) => {
+    setItems((allBoard) => {
       return {
-        ...allBoadrd,
+        ...allBoard,
         [boardInput]: [],
       };
     });
+    setBoards((prev) => [...prev, String(boardInput)]);
     setValue("boardInput", "");
   };
 

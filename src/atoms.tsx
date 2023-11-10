@@ -8,11 +8,7 @@ export interface ITodo {
 export interface IToDoState {
   [key: string]: ITodo[];
 }
-export const BoardList: IToDoState = {
-  "To Do": [],
-  Doing: [],
-  Done: [],
-};
+export const BoardList: IToDoState = {};
 export const toDoState = atom<IToDoState>({
   key: "toDo",
   default: loadToDos() ?? BoardList,

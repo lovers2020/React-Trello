@@ -2,7 +2,7 @@ import { ThemeProvider, createGlobalStyle, styled } from "styled-components";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import reset from "styled-reset";
-import { toDoState } from "./atoms";
+import { BoardsState, toDoState } from "./atoms";
 import Board from "./components/Board";
 import DeleteCard from "./components/DeleteCard";
 import CreateBoard from "./components/CreateBoardForm";
@@ -47,18 +47,16 @@ function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
   const onDragEnd = ({ destination, draggableId, source }: DropResult) => {
     if (!destination) return;
-    if (source.droppableId === "boards") {
+    if (destination.droppableId === "boards") {
       setToDos((prev) => {
+        console.log(source, destination);
         console.log(prev);
-        const entries = Object.entries(prev);
-        console.log(entries);
-        const [temp] = entries.splice(source.index, 1);
-        entries.splice(destination.index, 0, temp);
-
-        return {
-          ...prev,
-        };
+        const copiedBoards = Object(prev);
+        // copiedBoards.splice(source.index, 1);
+        console.log(copiedBoards);
+        return copiedBoards;
       });
+      return;
     } else if (destination.droppableId === "delete") {
       setToDos((allBoards) => {
         const deleteBoard = [...allBoards[source.droppableId]];
@@ -87,8 +85,8 @@ function App() {
     <>
       <GlobalStyle />
       <Wrapper>
-        <CreateBoard />
         <DragDropContext onDragEnd={onDragEnd}>
+          <CreateBoard />
           <Droppable droppableId="boards">
             {(provided) => (
               <InnerWrapper
@@ -103,6 +101,8 @@ function App() {
                     index={idx}
                   />
                 ))}
+
+                {provided.placeholder}
               </InnerWrapper>
             )}
           </Droppable>
