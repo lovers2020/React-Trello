@@ -22,12 +22,12 @@ interface IDraggableCardProps {
 function DraggableCard({ toDoId, toDoText, index }: IDraggableCardProps) {
   return (
     <Draggable draggableId={toDoId + ""} index={index}>
-      {(magic, snapshot) => (
+      {(provided, snapshot) => (
         <Card
           isDragging={snapshot.isDragging}
-          ref={magic.innerRef}
-          {...magic.draggableProps}
-          {...magic.dragHandleProps}
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
         >
           {toDoText}
         </Card>

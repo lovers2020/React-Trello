@@ -2,27 +2,26 @@ import { ThemeProvider, createGlobalStyle, styled } from "styled-components";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import reset from "styled-reset";
-import { IToDoState, toDoState } from "./atoms";
+import { toDoState } from "./atoms";
 import Board from "./components/Board";
-import deleteCard from "./components/deleteCard";
-import DeleteCard from "./components/deleteCard";
+import DeleteCard from "./components/DeleteCard";
+import CreateBoard from "./components/CreateBoardForm";
 
 const Wrapper = styled.div`
-  position: relative;
-  display: flex;
   width: 100%;
   margin: 0 auto;
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   height: 100vh;
 `;
-const DeleteArea = styled.div<{ isDraggingOver: boolean }>`
-  position: absolute;
-  bottom: 40px;
-  right: 600px;
-  text-align: center;
-  transition: scale 0.3s ease-in-out;
-  scale: ${(props) => (props.isDraggingOver ? 1.1 : 1.0)};
+const InnerWrapper = styled.div`
+  max-width: 1300px;
+  flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 const GlobalStyle = createGlobalStyle`
 ${reset}
@@ -48,6 +47,20 @@ function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
   const onDragEnd = ({ destination, draggableId, source }: DropResult) => {
     if (!destination) return;
+    // if (source.droppableId === "boards") {
+    //   setToDos((prev) => {
+    //     console.log(prev);
+    //     const entries = Object.entries(prev);
+    //     console.log(entries);
+    //     const [temp] = entries.splice(source.index, 1);
+    //     entries.splice(destination.index, 0, temp);
+    //     return entries.reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
+    //     // return {
+    //     //   ...prev,
+    //     //   entries,
+    //     // };
+    //   });
+    // } else
     if (destination.droppableId === "delete") {
       setToDos((allBoards) => {
         const deleteBoard = [...allBoards[source.droppableId]];
@@ -75,15 +88,29 @@ function App() {
   return (
     <>
       <GlobalStyle />
-
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Wrapper>
-          {Object.keys(toDos).map((boardId) => (
-            <Board boardId={boardId} key={boardId} toDos={toDos[boardId]} />
-          ))}
+      <Wrapper>
+        <CreateBoard />
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId="boards">
+            {(provided) => (
+              <InnerWrapper
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {Object.keys(toDos).map((boardId, idx) => (
+                  <Board
+                    boardId={boardId}
+                    key={boardId}
+                    toDos={toDos[boardId]}
+                    index={idx}
+                  />
+                ))}
+              </InnerWrapper>
+            )}
+          </Droppable>
           <DeleteCard />
-        </Wrapper>
-      </DragDropContext>
+        </DragDropContext>
+      </Wrapper>
     </>
   );
 }

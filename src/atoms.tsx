@@ -1,4 +1,4 @@
-import { atom, selector } from "recoil";
+import { atom } from "recoil";
 import { loadToDos } from "./components/storage";
 
 export interface ITodo {
@@ -8,12 +8,12 @@ export interface ITodo {
 export interface IToDoState {
   [key: string]: ITodo[];
 }
-const defaultToDos: IToDoState = {
+export const BoardList: IToDoState = {
   "To Do": [],
   Doing: [],
   Done: [],
 };
 export const toDoState = atom<IToDoState>({
   key: "toDo",
-  default: loadToDos() ?? defaultToDos,
+  default: loadToDos() ?? BoardList,
 });

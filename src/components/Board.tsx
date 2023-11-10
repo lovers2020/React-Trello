@@ -1,22 +1,24 @@
-import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
+import { Draggable, Droppable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import DraggableCard from "./DraggableCard";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { ITodo, toDoState } from "../atoms";
-import { useSetRecoilState, useRecoilState, Snapshot } from "recoil";
+import { useRecoilState } from "recoil";
 import { saveToDos } from "./storage";
 
 const Wrapper = styled.div`
-  margin: 0 20px;
+  position: relative;
+  margin: 20px;
   padding: 10px;
   background-color: ${(props) => props.theme.boardColor};
   border-radius: 5px;
   min-height: 200px;
-  min-width: 300px;
+  min-width: 250px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 `;
 const Title = styled.h1`
   text-align: center;
@@ -55,15 +57,14 @@ interface IAreaProps {
 interface IBoardprops {
   toDos: ITodo[];
   boardId: string;
+  index: number;
 }
 interface IForm {
   toDo: string;
 }
 
-export default function Board({ toDos, boardId }: IBoardprops) {
-  const onDrag = ({ source, draggableId, destination }: DropResult) => {
-    console.log(source, draggableId, destination);
-  };
+export default function Board({ toDos, boardId, index }: IBoardprops) {
+  //   console.log(boardId + "", index);
   const [ToDos, setToDos] = useRecoilState(toDoState);
   const { register, setValue, handleSubmit } = useForm<IForm>();
   const onVaild = ({ toDo }: IForm) => {
@@ -84,36 +85,46 @@ export default function Board({ toDos, boardId }: IBoardprops) {
   }, [ToDos]);
   return (
     <Wrapper>
-      <Title>{boardId}</Title>
-      <Form onSubmit={handleSubmit(onVaild)}>
-        <input
-          {...register("toDo", { required: true })}
-          type="text"
-          placeholder={`Add task on ${boardId}`}
-        ></input>
-      </Form>
-      <Droppable droppableId={boardId}>
-        {(magic, snapshot) => (
-          <>
-            <Area
-              isDraggingOver={snapshot.isDraggingOver}
-              isDraggingFromThis={Boolean(snapshot.draggingFromThisWith)}
-              ref={magic.innerRef}
-              {...magic.droppableProps}
-            >
-              {toDos.map((toDo, index) => (
-                <DraggableCard
-                  key={toDo.id}
-                  index={index}
-                  toDoId={toDo.id}
-                  toDoText={toDo.text}
-                />
-              ))}
-            </Area>
-            {magic.placeholder}
-          </>
+      <Draggable draggableId={boardId + ""} index={index}>
+        {(provided, snapshot) => (
+          <Wrapper
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          >
+            <Title>{boardId}</Title>
+            <Form onSubmit={handleSubmit(onVaild)}>
+              <input
+                {...register("toDo", { required: true })}
+                type="text"
+                placeholder={`Add task on ${boardId}`}
+              ></input>
+            </Form>
+            <Droppable droppableId={boardId}>
+              {(provided, snapshot) => (
+                <>
+                  <Area
+                    isDraggingOver={snapshot.isDraggingOver}
+                    isDraggingFromThis={Boolean(snapshot.draggingFromThisWith)}
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {toDos.map((toDo, index) => (
+                      <DraggableCard
+                        key={toDo.id}
+                        index={index}
+                        toDoId={toDo.id}
+                        toDoText={toDo.text}
+                      />
+                    ))}
+                  </Area>
+                  {provided.placeholder}
+                </>
+              )}
+            </Droppable>
+          </Wrapper>
         )}
-      </Droppable>
+      </Draggable>
     </Wrapper>
   );
 }
