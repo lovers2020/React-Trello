@@ -17,3 +17,7 @@ export const toDoState = atom<IToDoState>({
   key: "toDo",
   default: loadToDos() ?? BoardList,
 });
+export const BoardsState = atom<string[]>({
+  key: "boards",
+  default: ["To Do", "Doing", "Done"],
+});

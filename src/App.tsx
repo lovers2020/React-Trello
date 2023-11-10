@@ -47,21 +47,19 @@ function App() {
   const [toDos, setToDos] = useRecoilState(toDoState);
   const onDragEnd = ({ destination, draggableId, source }: DropResult) => {
     if (!destination) return;
-    // if (source.droppableId === "boards") {
-    //   setToDos((prev) => {
-    //     console.log(prev);
-    //     const entries = Object.entries(prev);
-    //     console.log(entries);
-    //     const [temp] = entries.splice(source.index, 1);
-    //     entries.splice(destination.index, 0, temp);
-    //     return entries.reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
-    //     // return {
-    //     //   ...prev,
-    //     //   entries,
-    //     // };
-    //   });
-    // } else
-    if (destination.droppableId === "delete") {
+    if (source.droppableId === "boards") {
+      setToDos((prev) => {
+        console.log(prev);
+        const entries = Object.entries(prev);
+        console.log(entries);
+        const [temp] = entries.splice(source.index, 1);
+        entries.splice(destination.index, 0, temp);
+
+        return {
+          ...prev,
+        };
+      });
+    } else if (destination.droppableId === "delete") {
       setToDos((allBoards) => {
         const deleteBoard = [...allBoards[source.droppableId]];
         deleteBoard.splice(source.index, 1);
