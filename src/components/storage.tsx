@@ -9,7 +9,5 @@ export const loadToDos = () => {
 };
 
 export const saveToDos = (todos: IToDoState) => {
-	const jsonObject = JSON.stringify(todos);
-
 	localStorage.setItem("ToDos", JSON.stringify(todos));
 };

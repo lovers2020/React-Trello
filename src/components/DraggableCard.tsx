@@ -23,14 +23,16 @@ function DraggableCard({ toDoId, toDoText, index }: IDraggableCardProps) {
 	return (
 		<Draggable draggableId={toDoId + ""} index={index}>
 			{(provided, snapshot) => (
-				<Card
-					isDragging={snapshot.isDragging}
-					ref={provided.innerRef}
-					{...provided.draggableProps}
-					{...provided.dragHandleProps}
-				>
-					{toDoText}
-				</Card>
+				<>
+					<Card
+						isDragging={snapshot.isDragging}
+						ref={provided.innerRef}
+						{...provided.draggableProps}
+						{...provided.dragHandleProps}
+					>
+						{toDoText}
+					</Card>
+				</>
 			)}
 		</Draggable>
 	);

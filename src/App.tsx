@@ -45,25 +45,10 @@ body {
 
 function App() {
 	const [toDos, setToDos] = useRecoilState(toDoState);
-	const [boards, setBoards] = useRecoilState(BoardsState);
-	const jsonArray: any[] = [];
 	const onDragEnd = ({ destination, draggableId, source }: DropResult) => {
 		if (!destination) return;
-		if (source.droppableId === "boards") {
-			setToDos((prev) => {
-				console.log(source, destination);
-				for (let i in prev) {
-					jsonArray.push(prev[i]);
-				}
 
-				console.log(jsonArray);
-
-				const copiedBoards = Object(prev);
-				// copiedBoards.splice(source.index, 1);
-				return copiedBoards;
-			});
-			return;
-		} else if (destination.droppableId === "delete") {
+		if (destination.droppableId === "delete") {
 			setToDos((allBoards) => {
 				const deleteBoard = [...allBoards[source.droppableId]];
 				deleteBoard.splice(source.index, 1);
@@ -79,6 +64,7 @@ function App() {
 					destBoard.splice(source.index, 1);
 				}
 				destBoard.splice(destination.index, 0, item);
+
 				return {
 					...allBoards,
 					[source.droppableId]: sourceBoard,
@@ -93,25 +79,18 @@ function App() {
 			<DragDropContext onDragEnd={onDragEnd}>
 				<Wrapper>
 					<CreateBoard />
-					<Droppable droppableId="boards">
-						{(provided) => (
-							<InnerWrapper
-								{...provided.droppableProps}
-								ref={provided.innerRef}
-							>
-								{Object.keys(toDos).map((boardId, idx) => (
-									<Board
-										boardId={boardId}
-										key={boardId}
-										toDos={toDos[boardId]}
-										index={idx}
-									/>
-								))}
 
-								{provided.placeholder}
-							</InnerWrapper>
-						)}
-					</Droppable>
+					<InnerWrapper>
+						{Object.keys(toDos).map((boardId, idx) => (
+							<Board
+								boardId={boardId}
+								key={boardId}
+								toDos={toDos[boardId]}
+								index={idx}
+							/>
+						))}
+					</InnerWrapper>
+
 					<DeleteCard />
 				</Wrapper>
 			</DragDropContext>
