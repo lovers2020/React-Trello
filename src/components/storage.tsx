@@ -1,13 +1,15 @@
 import { IToDoState } from "../atoms";
 
 export const loadToDos = () => {
-  const getToDos = localStorage.getItem("ToDos");
-  if (getToDos) {
-    return JSON.parse(getToDos);
-  }
-  return null;
+	const getToDos = localStorage.getItem("ToDos");
+	if (getToDos) {
+		return JSON.parse(getToDos);
+	}
+	return null;
 };
 
 export const saveToDos = (todos: IToDoState) => {
-  localStorage.setItem("ToDos", JSON.stringify(todos));
+	const jsonObject = JSON.stringify(todos);
+
+	localStorage.setItem("ToDos", JSON.stringify(todos));
 };
